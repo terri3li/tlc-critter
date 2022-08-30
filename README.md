@@ -316,7 +316,7 @@ We need to break one of our golden rules: we need to add click-handlers to a div
 Normally, we would never do this, but we don't have much choice in the matter. There are some things we need to do to make it work, though:
 
 - Since we can't use a `<Link>` from React Router, we'll need to navigate the user using the `useNavigate` hook. Check out the [React Router docs](https://reactrouter.com/en/main/hooks/use-navigate) for more info.
-- **HINT**: You'll want to use `e.preventDefault()`.
+- **HINT**: You'll need to use `event.preventDefault()`.
 
 ---
 
