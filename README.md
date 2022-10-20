@@ -169,7 +169,7 @@ const HomeFeed = () => {
 };
 ```
 
-Next, let's add routes to all of these components! Import React Router, add a `<Switch>`, and add the following routes:
+Next, let's add routes to all of these components! Import React Router, add a `<Routes>`, and add the following routes:
 
 - `/` (home route)
 - `/notifications` (notifications route. We won't be building this view, but let's add the route anyway.)
@@ -177,7 +177,7 @@ Next, let's add routes to all of these components! Import React Router, add a `<
 - `/tweet/:tweetId` (tweet route)
 - `/:profileId` (profile route)
 
-> It's important to put them in this order, within a Switch. **`/:profileId` should come last!** This is because it's the "loosest" route; `/notifications` _could_ match, since maybe there's a user with the username "notifications"
+> It's important to put them in this order, within a `<Routes>`. **`/:profileId` should come last!** This is because it's the "loosest" route; `/notifications` _could_ match, since maybe there's a user with the username "notifications"
 
 ---
 
