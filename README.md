@@ -267,7 +267,7 @@ You can wrap the provider around the app in `src/index.js`, and consume it in `A
 
 > Since we don't have a real login method for our website, `CurrentUserContext` will act as our signed in user (which will always be `treasurymog`).
 
-> **NOTE: This is the only `fetch` that needs to happen exist of a `context`!**
+> **NOTE: This is the only `fetch` that needs to happen of a `context`!**
 > 
 > **DOUBLE NOTE: This is the only `context` that should exist in the project!**
 
