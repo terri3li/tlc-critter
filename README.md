@@ -248,8 +248,8 @@ You can either use two state hooks, or a reducer hook; the choice is yours. Here
 
 ```js
 export const CurrentUserProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = React.useState(null);
-  const [status, setStatus] = React.useState("loading");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [status, setStatus] = useState("loading");
 
   // Fetch the user data from the API (/api/me/profile)
   // When the data is received, update currentUser.
