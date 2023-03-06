@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { format } from "date-fns";
 import { FiMessageCircle } from "react-icons/fi";
 import { FiRefreshCw } from "react-icons/fi";
 import { FiShare } from "react-icons/fi";
 import { COLORS } from "../constants";
+import { Link } from "react-router-dom";
+// import Error from "./Error";
 
-import Likes from "./SmallComponents/Likes";
+import Likes from "./Likes";
 
 /// big tweet page
 
@@ -15,11 +17,16 @@ const TweetDetails = () => {
   const [info, setInfo] = useState(null);
   const { tweetId } = useParams();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetch(`/api/tweet/${tweetId}`)
       .then((res) => res.json())
       .then((data) => {
         setInfo(data.tweet);
+      })
+      .catch((error) => {
+        navigate("/error");
       });
   }, []);
 
@@ -35,7 +42,9 @@ const TweetDetails = () => {
 
               <HeaderContainer>
                 <DisplayName>{info.author.displayName}</DisplayName>
-                <Handle>@{info.author.handle}</Handle>
+                <Link to={`/${info.author.handle}`}>
+                  <Handle>@{info.author.handle}</Handle>
+                </Link>
               </HeaderContainer>
             </TopContainer>
             <MainContainer>

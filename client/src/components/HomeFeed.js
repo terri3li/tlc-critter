@@ -1,18 +1,39 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { COLORS } from "../constants";
 import { FiMessageCircle } from "react-icons/fi";
 import { FiRefreshCw } from "react-icons/fi";
 import { FiShare } from "react-icons/fi";
 import { format } from "date-fns";
 
-import Likes from "./SmallComponents/Likes";
+import Likes from "./Likes";
 
-const HomeFeed = ({ tweetArray, newTweet, setNewTweet }) => {
-  const [tweet, setTweet] = useState([]);
+const HomeFeed = () => {
   const [formData, setFormData] = useState("");
   const [length, setLength] = useState(280);
+  const [order, setOrder] = useState([]);
+  const [tweet, setTweet] = useState([]);
+  const [newTweet, setNewTweet] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("/api/me/home-feed")
+      .then((res) => res.json())
+      .then((data) => {
+        setOrder(data.tweetIds);
+        setTweet(data.tweetsById);
+      })
+      .catch((error) => {
+        navigate("/error");
+      });
+  }, [newTweet]);
+
+  const tweetArray = order.map((id) => {
+    return tweet[id];
+  });
 
   const handlePost = (e) => {
     //add error page
@@ -30,40 +51,28 @@ const HomeFeed = ({ tweetArray, newTweet, setNewTweet }) => {
         setNewTweet(!newTweet);
         setFormData("");
         setTweet(data.tweet);
+        setLength(280);
       })
       .catch((error) => {
-        console.log(error);
+        navigate("/error");
       });
   };
 
   const handleChange = (e) => {
+    e.preventDefault();
     setLength(280 - e.target.value.length);
 
     const { id, value } = e.target;
     setFormData(e.target.value);
   };
 
-  // const changeFontColor = () => {
-  //   let fontColor = "black";
-  //   if (length <= 55) {
-  //     fontColor = "yellow";
-  //     // console.log(fontColor);
-  //     return fontColor;
-  //   } else if (length <= -1) {
-  //     fontColor = "red";
-  //     return fontColor;
-  //   } else {
-  //     fontColor = "black";
-  //     // console.log(fontColor);
-  //     return fontColor;
-  //   }
-  // };
-
-  let fontColor = "black";
+  const preventTweetLink = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <MainContainer>
-      <h1>Homepage</h1>
+      <Title>Homepage</Title>
       <PostContainer>
         <form onSubmit={handlePost}>
           <PostForm
@@ -73,28 +82,33 @@ const HomeFeed = ({ tweetArray, newTweet, setNewTweet }) => {
             value={formData}
           />
           <CountAndSubmit>
-            {length <= 55 ? (fontColor = "yellow") : (fontColor = "black")}
-            <CharCount style={{ color: fontColor }}>{length}</CharCount>
-            <Button disabled={length < 0}>Meow</Button>
+            <CharCount length={length}>{length}</CharCount>
+            <Button disabled={length < 0 || length > 279}>Meow</Button>
           </CountAndSubmit>
         </form>
       </PostContainer>
 
       <FeedContainer>
         {tweetArray.map((tweet) => {
+          const toProfile = (e) => {
+            e.preventDefault();
+            navigate(`/${tweet.author.handle}`);
+          };
           return (
-            <Link to={`/tweet/${tweet.id}`}>
+            <Link
+              key={tweet.id}
+              to={`/tweet/${tweet.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
               <Tweet key={tweet.id}>
                 <TweetContent>
                   <Container>
-                    <Link to={`/${tweet.author.handle}`}>
-                      <Avatar
-                        alt="Avatar Photo"
-                        src={tweet.author.avatarSrc}
-                        tweet={tweet}
-                      />
-                    </Link>
-
+                    <Avatar
+                      alt="Avatar Photo"
+                      src={tweet.author.avatarSrc}
+                      tweet={tweet}
+                      onClick={toProfile}
+                    />
                     <HeaderContainer>
                       <DisplayName> {tweet.author.displayName} </DisplayName>
                       <Handle>@{tweet.author.handle}</Handle>
@@ -112,7 +126,7 @@ const HomeFeed = ({ tweetArray, newTweet, setNewTweet }) => {
                 <IconMenu>
                   <FiMessageCircle />
                   <FiRefreshCw />
-                  <Likes />
+                  <Likes onClick={preventTweetLink} />
                   <FiShare />
                 </IconMenu>
               </Tweet>
@@ -123,6 +137,18 @@ const HomeFeed = ({ tweetArray, newTweet, setNewTweet }) => {
     </MainContainer>
   );
 };
+
+const Title = styled.div`
+  padding: 12px 16px 12px 16px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  font-size: 2.25em;
+  font-weight: bold;
+  background-color: #f3f3f3;
+  color: ${COLORS.primary};
+  border-radius: 20px;
+  border: solid 1.5px ${COLORS.primary};
+`;
 
 const MainContainer = styled.div`
   display: flex;
@@ -160,8 +186,20 @@ const CountAndSubmit = styled.div`
   background-color: #f0e7ff;
 `;
 
+let fontColor = "";
 const CharCount = styled.div`
-  color: blue;
+  color: ${({ length }) => {
+    switch (true) {
+      case length > 55:
+        return (fontColor = "black");
+
+      case length < 56 && length >= 0:
+        return (fontColor = "yellow");
+
+      case length < 0:
+        return (fontColor = "red");
+    }
+  }};
 `;
 
 const Container = styled.div`
@@ -225,7 +263,7 @@ const Button = styled.button`
   font-size: 1em;
   border-radius: 20px;
   &:disabled {
-    transp
+    background-color: gray;
   }
   &:hover {
     cursor: pointer;

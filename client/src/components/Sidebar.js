@@ -7,16 +7,22 @@ import { FiHome } from "react-icons/fi";
 import { FiSmile } from "react-icons/fi";
 import { FiBell } from "react-icons/fi";
 import { FiFolder } from "react-icons/fi";
+import { FiLoader } from "react-icons/fi";
+import { keyframes } from "styled-components";
 
-import Logo from "./SmallComponents/Logo";
+import Logo from "./Logo";
 
 const Sidebar = () => {
   const { status } = useContext(CurrentUserContext);
+  const { currentUser } = useContext(CurrentUserContext);
 
   return (
     <Container>
       {status === "loading" ? (
-        <h1>Loading....</h1>
+       <Spin>
+        <FiLoader size={70} color={`${COLORS.primary}`} />
+        </Spin>
+        
       ) : (
         <>
           <Logo />
@@ -27,7 +33,7 @@ const Sidebar = () => {
                 <FiHome /> Home
               </LinkTitle>
             </NavigationLink>
-            <NavigationLink to={"/profile/user"}>
+            <NavigationLink to={`/${currentUser.handle}`}>
               <LinkTitle>
                 <FiSmile /> Profile
               </LinkTitle>
@@ -61,6 +67,7 @@ const NavigationLink = styled(NavLink)`
 
 const Container = styled.div`
   height: 40vh;
+  width: 18vw;
   margin: 50px 100px 50px 50px;
   display: flex;
   flex-direction: column;
@@ -96,6 +103,21 @@ const Button = styled.button`
   color: white;
   font-size: 1em;
   border-radius: 15px;
+`;
+
+// @keyframes spin { 
+//   0% { 
+//     transform: rotate(0deg);
+//   }
+//   100% {
+//     transform: rotate(360deg);
+//   }
+// }
+
+const Spin = styled.div`
+text-align: center;
+padding-left: 28px;
+animation: spin 2s linear infinite;
 `;
 
 export default Sidebar;
