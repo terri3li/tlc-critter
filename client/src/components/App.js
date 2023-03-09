@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GlobalStyle from "../GlobalStyles";
 import styled from "styled-components";
 
+//components
 import Profile from "./Profile";
 import HomeFeed from "./HomeFeed";
 import TweetDetails from "./TweetDetails";
@@ -10,10 +11,8 @@ import Bookmarks from "./NotBeingUsed/Bookmarks";
 import Notifications from "./NotBeingUsed/Notifications";
 import Sidebar from "./Sidebar";
 import CurrentUserProvider from "../CurrentUserContext";
-import Error from "./Error";
 
 const App = () => {
-
   return (
     <CurrentUserProvider>
       <BrowserRouter>
@@ -26,7 +25,6 @@ const App = () => {
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="/tweet/:tweetId" element={<TweetDetails />} />
             <Route path="/:profileId" element={<Profile />} />
-            <Route path="/error" element={<Error />} />
             {/* <Route path="*" element ={<PageNotFound />} /> */}
           </Routes>
         </Wrapper>

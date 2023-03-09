@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { format } from "date-fns";
@@ -7,7 +7,8 @@ import { FiRefreshCw } from "react-icons/fi";
 import { FiShare } from "react-icons/fi";
 import { COLORS } from "../constants";
 import { Link } from "react-router-dom";
-// import Error from "./Error";
+
+import { CurrentUserContext } from "../CurrentUserContext";
 
 import Likes from "./Likes";
 
@@ -16,6 +17,7 @@ import Likes from "./Likes";
 const TweetDetails = () => {
   const [info, setInfo] = useState(null);
   const { tweetId } = useParams();
+  const { error, setError } = useContext(CurrentUserContext);
 
   const navigate = useNavigate();
 
@@ -25,8 +27,10 @@ const TweetDetails = () => {
       .then((data) => {
         setInfo(data.tweet);
       })
-      .catch((error) => {
-        navigate("/error");
+      .catch((e) => {
+        setError(true);
+        console.log("tweetId fetch fail");
+        console.log(e);
       });
   }, []);
 

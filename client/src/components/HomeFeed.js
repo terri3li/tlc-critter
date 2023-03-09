@@ -1,14 +1,13 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useContext } from "react";
 import { COLORS } from "../constants";
-import { FiMessageCircle } from "react-icons/fi";
-import { FiRefreshCw } from "react-icons/fi";
-import { FiShare } from "react-icons/fi";
-import { format } from "date-fns";
 
-import Likes from "./Likes";
+//components
+import { CurrentUserContext } from "../CurrentUserContext";
+import Error from "./Error";
+import FeedTweet from "./FeedTweet";
 
 const HomeFeed = () => {
   const [formData, setFormData] = useState("");
@@ -18,6 +17,8 @@ const HomeFeed = () => {
   const [newTweet, setNewTweet] = useState(false);
 
   const navigate = useNavigate();
+  const { currentUser, error, setError, status } =
+    useContext(CurrentUserContext);
 
   useEffect(() => {
     fetch("/api/me/home-feed")
@@ -26,8 +27,10 @@ const HomeFeed = () => {
         setOrder(data.tweetIds);
         setTweet(data.tweetsById);
       })
-      .catch((error) => {
-        navigate("/error");
+      .catch((e) => {
+        setError(true);
+        console.log("homefeed fail");
+        console.log(e);
       });
   }, [newTweet]);
 
@@ -36,7 +39,6 @@ const HomeFeed = () => {
   });
 
   const handlePost = (e) => {
-    //add error page
     e.preventDefault();
     fetch("/api/tweet", {
       method: "POST",
@@ -50,11 +52,12 @@ const HomeFeed = () => {
       .then((data) => {
         setNewTweet(!newTweet);
         setFormData("");
-        setTweet(data.tweet);
         setLength(280);
       })
-      .catch((error) => {
-        navigate("/error");
+      .catch((e) => {
+        setError(true);
+        console.log("homefeed post fail");
+        console.log(e);
       });
   };
 
@@ -66,73 +69,49 @@ const HomeFeed = () => {
     setFormData(e.target.value);
   };
 
-  const preventTweetLink = (e) => {
+  const toHomeProfile = (e) => {
     e.preventDefault();
+    navigate(`/${currentUser.handle}`);
   };
-
-  return (
+  
+  return error ? (
+    <Error />
+  ) : (
     <MainContainer>
       <Title>Homepage</Title>
       <PostContainer>
-        <form onSubmit={handlePost}>
+        <StyledForm onSubmit={handlePost}>
           <PostForm
             type="text"
             onChange={handleChange}
             placeholder="...What's up?"
             value={formData}
           />
+          {currentUser && (
+            <UserAvatar alt="Avatar Photo" src={currentUser.avatarSrc} />
+          )}
           <CountAndSubmit>
             <CharCount length={length}>{length}</CharCount>
             <Button disabled={length < 0 || length > 279}>Meow</Button>
           </CountAndSubmit>
-        </form>
+        </StyledForm>
       </PostContainer>
 
       <FeedContainer>
-        {tweetArray.map((tweet) => {
-          const toProfile = (e) => {
-            e.preventDefault();
-            navigate(`/${tweet.author.handle}`);
-          };
-          return (
-            <Link
-              key={tweet.id}
-              to={`/tweet/${tweet.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Tweet key={tweet.id}>
-                <TweetContent>
-                  <Container>
-                    <Avatar
-                      alt="Avatar Photo"
-                      src={tweet.author.avatarSrc}
-                      tweet={tweet}
-                      onClick={toProfile}
-                    />
-                    <HeaderContainer>
-                      <DisplayName> {tweet.author.displayName} </DisplayName>
-                      <Handle>@{tweet.author.handle}</Handle>
-                      <TimeStamp>
-                        {format(new Date(tweet.timestamp), "◦ MMM do")}
-                      </TimeStamp>
-                    </HeaderContainer>
-                  </Container>
-                  <p>{tweet.status}</p>
-
-                  {tweet.media.length !== 0 && (
-                    <Photo alt="Tweet Photo" src={tweet.media[0].url} />
-                  )}
-                </TweetContent>
-                <IconMenu>
-                  <FiMessageCircle />
-                  <FiRefreshCw />
-                  <Likes onClick={preventTweetLink} />
-                  <FiShare />
-                </IconMenu>
-              </Tweet>
-            </Link>
-          );
-        })}
+        {tweetArray.length &&
+          tweetArray.map((tweet) => {
+            return (
+              <FeedTweet
+                key={tweet.id}
+                media={tweet.media.length ? tweet.media : []}
+                status={tweet.status}
+                author={tweet.author}
+                timestamp={tweet.timestamp}
+                id={tweet.id}
+                tweet={tweet.tweet}
+              />
+            );
+          })}
       </FeedContainer>
     </MainContainer>
   );
@@ -164,26 +143,17 @@ const FeedContainer = styled.div`
 const PostContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const HeaderContainer = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
+  width: 45vw;
 `;
 
 const CountAndSubmit = styled.div`
+  position: relative;
   display: flex;
   justify-content: flex-end;
   padding-right: 15px;
   padding-bottom: 10px;
   gap: 15px;
   align-items: center;
-  border: solid 1.5px ${COLORS.primary};
-  border-top: none;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  background-color: #f0e7ff;
 `;
 
 let fontColor = "";
@@ -202,56 +172,30 @@ const CharCount = styled.div`
   }};
 `;
 
-const Container = styled.div`
-  display: flexbox;
-  align-items: center;
-  gap: 18px;
-`;
-
-const TweetContent = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const IconMenu = styled.div`
-  padding-top: 25px;
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-  color: ${COLORS.primary};
-  border-top: solid 1px ${COLORS.primary};
-`;
-
-const DisplayName = styled.div`
-  font-size: 1em;
-  font-weight: bold;
-`;
-
-const Handle = styled.div`
-  font-size: 0.9em;
-  color: ${COLORS.primary};
-`;
-
-const TimeStamp = styled.div`
-  font-size: 0.75em;
-`;
-
 const PostForm = styled.textarea`
   display: flex;
+  resize: none;
+  position: absolute;
   flex-wrap: wrap;
   align-items: flex-start;
-  width: 45vw;
+  width: 44vw;
   height: 15vh;
-  border: solid 1.5px ${COLORS.primary};
-  border-bottom: none;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  background-color: #f0e7ff;
+  border: none;
+  border-radius: 25px;
   text-align: center;
   font-size: 1.15em;
+  background-color: #f0e7ff;
   &:focus-visible {
     outline: none;
   }
+`;
+
+const StyledForm = styled.form`
+  width: 45vw;
+  background-color: #f0e7ff;
+  border: solid 1.5px ${COLORS.primary};
+  border-radius: 25px;
+  padding: 10px;
 `;
 
 const Button = styled.button`
@@ -270,24 +214,13 @@ const Button = styled.button`
   }
 `;
 
-const Avatar = styled.img`
+const UserAvatar = styled.img`
+  position: relative;
   width: 6vw;
   border-radius: 40px;
-`;
-
-const Photo = styled.img`
-  width: 40vw;
-  border-radius: 15px;
-`;
-
-const Tweet = styled.div`
-  width: 50vw;
-  padding: 20px;
-  margin: 10px;
-  margin-top: 50px;
-  border: solid 1.5px ${COLORS.primary};
-  border-radius: 15px;
-  background-color: #f3f3f3;
+  z-index: 2;
+  margin-left: 20px;
+  background: transparent;
 `;
 
 export default HomeFeed;

@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { COLORS } from "../constants";
 
 const Error = () => {
-
   return (
     <Container>
       <FiFrown size={100} color={`${COLORS.primary}`} />
