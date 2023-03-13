@@ -13,7 +13,9 @@ const Profile = () => {
   const [order, setOrder] = useState([]);
   const [tweet, setTweet] = useState([]);
   const [newTweet, setNewTweet] = useState(false);
-  const { error, setError } = useContext(CurrentUserContext);
+  const { error } = useContext(CurrentUserContext);
+  const [localError, setLocalError] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +25,7 @@ const Profile = () => {
         setUser(data.profile);
       })
       .catch((e) => {
-        setError(true);
+        setLocalError(true);
         console.log("profile fetch fail");
         console.log(e);
       });
@@ -38,7 +40,7 @@ const Profile = () => {
         setTweet(data.tweetsById);
       })
       .catch((e) => {
-        setError(true);
+        setLocalError(true);
         console.log("profile feed fetch fail");
         console.log(e);
       });
@@ -48,7 +50,9 @@ const Profile = () => {
     return tweet[id];
   });
 
-  return (
+  return error || localError ? (
+    <Error />
+  ) : (
     <Container>
       <Avatar alt="user avatar" src={user.avatarSrc} />
       <Header alt="profile banner" src={user.bannerSrc} />

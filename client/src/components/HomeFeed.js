@@ -15,9 +15,10 @@ const HomeFeed = () => {
   const [order, setOrder] = useState([]);
   const [tweet, setTweet] = useState([]);
   const [newTweet, setNewTweet] = useState(false);
+  const [localError, setLocalError] = useState(false);
 
   const navigate = useNavigate();
-  const { currentUser, error, setError, status } =
+  const { currentUser, error } =
     useContext(CurrentUserContext);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const HomeFeed = () => {
         setTweet(data.tweetsById);
       })
       .catch((e) => {
-        setError(true);
+        setLocalError(true);
         console.log("homefeed fail");
         console.log(e);
       });
@@ -55,7 +56,7 @@ const HomeFeed = () => {
         setLength(280);
       })
       .catch((e) => {
-        setError(true);
+        setLocalError(true);
         console.log("homefeed post fail");
         console.log(e);
       });
@@ -74,7 +75,7 @@ const HomeFeed = () => {
     navigate(`/${currentUser.handle}`);
   };
   
-  return error ? (
+  return error || localError ? (
     <Error />
   ) : (
     <MainContainer>
