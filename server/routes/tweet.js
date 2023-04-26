@@ -2,6 +2,8 @@
   This file contains endpoints for interacting with a single tweet.
 */
 
+//// This code is from Concordia (not written by myself)
+
 const lodash = require('lodash');
 
 const router = require('express').Router();

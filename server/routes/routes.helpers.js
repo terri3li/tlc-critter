@@ -1,3 +1,5 @@
+//// This code is from Concordia (not written by myself)
+
 const data = require('../data');
 
 // HARDCODED CURRENT USER.

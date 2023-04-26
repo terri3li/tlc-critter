@@ -1,6 +1,10 @@
 /**
   Endpoints related to profile information and user details
 */
+
+//// This code is from Concordia (not written by myself)
+
+
 const lodash = require('lodash');
 const router = require('express').Router();
 
