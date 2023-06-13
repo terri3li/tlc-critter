@@ -6,7 +6,9 @@ const data = require('../data');
 const CURRENT_USER_HANDLE = 'treasurymog';
 
 const MAX_DELAY = 2000;
-const FAILURE_ODDS = 0.05;
+//below was originally set to 0.05 by concordia because an error page needed 
+//to be built and tested 
+const FAILURE_ODDS = 0.00;
 
 // Our server is very lean and quick, given that it doens't actually connect
 // to a database or deal with any sort of scale!

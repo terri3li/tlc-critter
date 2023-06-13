@@ -110,7 +110,7 @@ const TimeStamp = styled.div`
 
 const Avatar = styled.img`
   width: 6vw;
-  border-radius: 40px;
+  border-radius: 50px;
 `;
 
 const Photo = styled.img`

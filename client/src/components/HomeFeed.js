@@ -79,6 +79,7 @@ const HomeFeed = () => {
     <Error />
   ) : (
     <MainContainer>
+      {/* <ContainerAlign> */}
       <Title>Homepage</Title>
       <PostContainer>
         <StyledForm onSubmit={handlePost}>
@@ -114,6 +115,7 @@ const HomeFeed = () => {
             );
           })}
       </FeedContainer>
+      {/* </ContainerAlign> */}
     </MainContainer>
   );
 };
@@ -136,15 +138,20 @@ const MainContainer = styled.div`
   align-items: center;
 `;
 
+// const ContainerAlign = styled.div`
+// display: flex;
+// flex-direction: column;
+// align-items: center;
+// `;
+
 const FeedContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
 const PostContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 45vw;
+margin-right: 6vw;
+  width: 40vw;
 `;
 
 const CountAndSubmit = styled.div`
@@ -218,7 +225,7 @@ const Button = styled.button`
 const UserAvatar = styled.img`
   position: relative;
   width: 6vw;
-  border-radius: 40px;
+  border-radius: 50px;
   z-index: 2;
   margin-left: 20px;
   background: transparent;

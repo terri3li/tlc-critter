@@ -58,22 +58,24 @@ const Profile = () => {
       <Header alt="profile banner" src={user.bannerSrc} />
 
       <InfoContainer>
-        <h1>{user.displayName}</h1>
-        <div>@{user.handle}</div>
+        <TopContainer>
+        <DisplayName>{user.displayName}</DisplayName>
+        {/* need to turn below into button and move to top left corner */}
+        {user.isBeingFollowedByYou ? <Following>Following</Following> : <Following>Follow</Following>}
+        </TopContainer>
+        <Handle>@{user.handle}</Handle>
+        <Bio>{user.bio}</Bio>
         {user.isFollowingYou ? (
-          <FollowingYou>following you</FollowingYou>
+          <FollowingYou>Following you</FollowingYou>
         ) : (
-          <span>is not following you</span>
+          <FollowingYou>Is not following you</FollowingYou>
         )}
-        <div>{user.bio}</div>
         <div>{user.isBeingFollowedByYou}</div>
         {/* add location icon below */}
-        <div>{user.location}</div>
-        <div>Likes: {user.numLikes}</div>
-        {/* need to turn below into button and move to top left corner */}
-        {user.isBeingFollowedByYou ? <div>Following</div> : <div>Follow</div>}
+        {/* <div>{user.location}</div> */}
+        {/* <div>Likes: {user.numLikes}</div> */}
         {/* format date */}
-        <div>{user.joined}</div>
+        {/* <div>{user.joined}</div> */}
       </InfoContainer>
       <FeedContainer>
         {tweetArray.map((tweet) => {
@@ -94,13 +96,36 @@ const Profile = () => {
   );
 };
 
+const DisplayName = styled.div`
+font-size: 2em;
+font-weight: bold;
+`;
+
+const TopContainer = styled.div`
+display: flex;
+justify-content: space-between`;
+
 const Avatar = styled.img`
   width: 10vw;
   margin-top: 25vh;
   margin-left: 3vw;
-  border-radius: 70px;
+  border-radius: 80px;
   border: solid 4px white;
   z-index: 1;
+`;
+
+const Bio = styled.div`
+font-size: 1.05em;
+`;
+
+const Following = styled.div`
+margin-top: 2vh;
+  background-color: #dedede;
+  color: green;
+  border-radius: 10px;
+  border: solid 1px green;
+  padding: 5px;
+  width: fit-content;
 `;
 
 const Photo = styled.img`
@@ -119,9 +144,11 @@ const Container = styled.div`
 `;
 
 const FollowingYou = styled.div`
+margin-top: 2vh;
   background-color: #dedede;
   color: ${COLORS.primary};
-  border-radius: 4px;
+  border-radius: 10px;
+  border: solid 1px ${COLORS.primary};
   padding: 5px;
   width: fit-content;
 `;
@@ -130,14 +157,8 @@ const InfoContainer = styled.div``;
 
 const FeedContainer = styled.div``;
 
-const TweetContainer = styled.div``;
-
-const HeaderContainer = styled.div``;
-
-const DisplayName = styled.div``;
-
-const TimeStamp = styled.div``;
-
-const Handle = styled.div``;
+const Handle = styled.div`
+font-size: 1.25em;
+`;
 
 export default Profile;
